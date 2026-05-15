@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Calendar</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        /* FORM */
+        .event-form {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .event-form input,
+        .event-form textarea {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+        }
+
+        button {
+            padding: 8px 12px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            background: green;
+            color: white;
+        }
+
+        /* CALENDAR */
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .day {
+            background: white;
+            min-height: 120px;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .day h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .event {
+            background: #e3f2fd;
+            margin-top: 5px;
+            padding: 5px;
+            font-size: 12px;
+            border-radius: 5px;
+        }
+
+        .event small {
+            display: block;
+            color: gray;
+        }
+
+        .btns {
+            margin-top: 5px;
+        }
+
+        .delete-btn {
+            background: red;
+            color: white;
+            font-size: 11px;
+        }
+
+        .edit-btn {
+            background: orange;
+            color: white;
+            font-size: 11px;
+        }
+
+        input, textarea {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Event Calendar CRUD</h1>
+
+    <!-- ADD EVENT -->
+    <form class="event-form" action="/add" method="post">
+        <h3>Add Event</h3>
+        <input type="text" name="title" placeholder="Title" required><br><br>
+        <textarea name="description" placeholder="Description"></textarea><br><br>
+        <input type="date" name="date" required><br><br>
+        <button class="add-btn" type="submit">Add Event</button>
+    </form>
+
+    <hr>
+
+    <!-- CALENDAR VIEW -->
+    <div class="calendar">
+        {% for day in range(1, 32) %}
+        <div class="day">
+            <h4>Day {{ day }}</h4>
+            {% for event in events %}
+                {% set event_day = event.date.split("-")[2] | int %}
+                {% if event_day == day %}
+                <div class="event">
+                    <b>{{ event.title }}</b>
+                    <small>{{ event.description }}</small>
+                    <small>{{ event.date }}</small>
+                    <!-- EDIT -->
+                    <form action="/edit/{{ event.id }}" method="post">
+                        <input type="hidden" name="title" value="{{ event.title }}"><br><br>
+                        <input type="hidden" name="description" value="{{ event.description }}"><br><br>
+                        <input type="hidden" name="date" value="{{ event.date }}"><br><br>
+                        <button class="edit-btn" type="submit">
+                            Quick Edit
+                        </button>
+                    </form>
+
+                    <!-- DELETE -->
+                    <a href="/delete/{{ event.id }}">
+                        <button class="delete-btn">Delete</button>
+                    </a>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>
